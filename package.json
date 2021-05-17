@@ -1,0 +1,22 @@
+{
+  "name": "assignment-1",
+  "version": "1.0.0",
+  "description": "Alex Gilmer's SD-105 Assignment 1: Bus Stop API ===============================================",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexgilmer/SD105-Assignment-1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexgilmer/SD105-Assignment-1/issues"
+  },
+  "homepage": "https://github.com/alexgilmer/SD105-Assignment-1#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
+}
