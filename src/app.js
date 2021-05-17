@@ -1,5 +1,25 @@
 const baseAPIString = 'https://api.winnipegtransit.com/v3/';
 const myAPIKey = 'Pwv2RRw9obTuNAXMOwK8';
+const dataObject = {
+  street: 'Main Street',
+  stops: {
+    10624: {
+      crossStreet: 'Assiniboine Avenue',
+      direction: 'Northbound',
+      routes: {
+        55: "2021-05-17T13:40:05",
+        68: "2021-05-17T13:35:46"
+      }
+    },
+    10625: {
+      crossStreet: 'Some Boulevard',
+      direction: 'Westbound',
+      routes: {
+        999: "2021-05-17T23:59:59"
+      }
+    }
+  }
+};
 
 const getStreets = async function(string) {
   const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`)
