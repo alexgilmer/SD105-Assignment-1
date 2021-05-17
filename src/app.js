@@ -72,6 +72,28 @@ const buildDataObject = async function() {
   return dataObject;
 };
 
+const createBusListing = function(dataObject) {
+  const tbodyElem = document.querySelector('tbody');
+  tbodyElem.innerHTML = '';
+
+  for (let stop in dataObject.stops) {
+    for (let route in dataObject.stops[stop].routes) {
+      for (let busTime of dataObject.stops[stop].routes[route]) {
+        const appointment = (new Date(busTime)).toLocaleTimeString('en-US', {hour:"numeric", minute:"numeric"});
+        
+        tbodyElem.innerHTML += `
+        <tr>
+          <td>${dataObject.stops[stop].street}</td>
+          <td>${dataObject.stops[stop].crossStreet}</td>
+          <td>${dataObject.stops[stop].direction}</td>
+          <td>${route}</td>
+          <td>${appointment}</td>
+        </tr>`;
+      }
+    }
+  }
+}
+
 const populateBusStops = function(streetKey) {
   // wipe object data
   // get all the stops
@@ -94,7 +116,7 @@ const populateBusStops = function(streetKey) {
     }
     buildDataObject()
     .then((dataObject) => {
-      console.log(dataObject);
+      createBusListing(dataObject);
     })
     .catch((err) => {
       console.log('Something is broken:');
@@ -105,9 +127,6 @@ const populateBusStops = function(streetKey) {
     console.log('Something is broken:');
     console.log(err);
   });
-
-  const tbodyElem = document.querySelector('tbody');
-  tbodyElem.innerHTML = '';
 };
 
 document.forms[0].addEventListener('submit', (e) => {
