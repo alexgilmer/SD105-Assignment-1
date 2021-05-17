@@ -21,6 +21,11 @@ const dataObject = {
   }
 };
 
+const wipeData = function() {
+  dataObject.street = '';
+  dataObject.stops = {};
+};
+
 const getStreets = async function(string) {
   const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`)
   const data = await response.json();
@@ -34,7 +39,7 @@ const getStops = async function(streetKey) {
 };
 
 const getRouteData = async function(stopKey) {
-  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}`);
+  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}&max-results-per-route=2`);
   const data = await response.json();
   console.log(data['stop-schedule']['route-schedules']);
 };
