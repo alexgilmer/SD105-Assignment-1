@@ -13,12 +13,20 @@ const getStops = async function(streetKey) {
   return data.stops;
 };
 
+const getRouteData = async function(stopKey) {
+  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}`);
+  const data = await response.json();
+  console.log(data['stop-schedule']['route-schedules']);
+};
+
 getStreets('main')
-.then((data) => {
-  return getStops(data[0].key)
+.then((streets) => {
+  console.log(streets);
+  return getStops(streets[0].key)
 })
-.then((data) => {
-  console.log(data)
+.then((stops) => {
+  console.log(stops);
+  getRouteData(stops[0].key);
 })
 .catch(err => {
   console.log('Something went wrong:');

@@ -2,3 +2,4 @@ node_modules
 dist
 stopsData.json
 streetData.json
+stopTimes.json
