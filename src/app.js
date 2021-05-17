@@ -44,16 +44,30 @@ const getRouteData = async function(stopKey) {
   console.log(data['stop-schedule']['route-schedules']);
 };
 
-getStreets('main')
-.then((streets) => {
-  console.log(streets);
-  return getStops(streets[0].key)
-})
-.then((stops) => {
-  console.log(stops);
-  getRouteData(stops[0].key);
-})
-.catch(err => {
-  console.log('Something went wrong:');
-  console.log(err);
-})
+const getStreetLink = function(street) {
+  return `<a href="#" data-street-key="${street.key}">${street.name}</a>`;
+}
+
+const populateStreetList = function(streets) {
+  const streetListElem = document.querySelector('section.streets');
+  streetListElem.innerHTML = '';
+  for (let street of streets) {
+    streetListElem.innerHTML += getStreetLink(street);
+  }
+};
+
+document.forms[0].addEventListener('submit', (e) => {
+  e.preventDefault();
+  const searchString = e.target[0].value;
+  if (searchString) {
+    e.target[0].value = '';
+    getStreets(searchString)
+    .then((streets) => {
+      populateStreetList(streets);
+    })
+    .catch((err) => {
+      console.log('Something went wrong:');
+      console.log(err);
+    });
+  }
+});
