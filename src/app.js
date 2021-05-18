@@ -1,6 +1,8 @@
 const baseAPIString = 'https://api.winnipegtransit.com/v3/';
 const myAPIKey = 'Pwv2RRw9obTuNAXMOwK8';
 const streetListElem = document.querySelector('section.streets');
+const tbodyElem = document.querySelector('tbody');
+const displayStatusElem = document.getElementById('street-name');
 const NUM_BUSES_PER_ROUTE = 2;
 
 const dataObject = {
@@ -80,7 +82,6 @@ const buildDataObject = async function() {
 };
 
 const createBusListing = function(dataObject) {
-  const tbodyElem = document.querySelector('tbody');
   tbodyElem.innerHTML = '';
 
   for (let stop in dataObject.stops) {
@@ -109,6 +110,8 @@ const populateBusStops = function(streetKey) {
 
   getStops(streetKey)
   .then((stopList) => {
+    displayStatusElem.textContent = `Displaying results for ${stopList[0].street.name}`;
+    tbodyElem.innerHTML = '<tr><td>Data construction in progress...</td></tr>';
     for (let stop of stopList) {
       dataObject.stops[stop.key] = {
         street: stop.street.name,
@@ -124,6 +127,7 @@ const populateBusStops = function(streetKey) {
     .catch((err) => {
       console.log('Something is broken:');
       console.log(err);
+      tbodyElem.innerHTML = '<tr><td>Data construction failed.  Please try again in a couple of minutes.</td></tr>';
     });
   })
   .catch((err) => {
@@ -154,3 +158,7 @@ streetListElem.addEventListener('click', (e) => {
     populateBusStops(streetKey);
   }
 });
+
+streetListElem.innerHTML = '';
+tbodyElem.innerHTML = '';
+displayStatusElem.textContent = '';
