@@ -28,7 +28,7 @@ const wipeDataObject = function() {
 };
 
 const getStreets = async function(string) {
-  const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`)
+  const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`);
   const data = await response.json();
   return data.streets;
 };
@@ -47,7 +47,7 @@ const getRouteData = async function(stopKey) {
 
 const getStreetLink = function(street) {
   return `<a href="#" data-street-key="${street.key}">${street.name}</a>`;
-}
+};
 
 const populateStreetList = function(streets) {
   streetListElem.innerHTML = '';
@@ -58,7 +58,7 @@ const populateStreetList = function(streets) {
 
 const buildDataObject = async function() {
   for (let stop in dataObject.stops) {
-    const routes = await getRouteData(stop)
+    const routes = await getRouteData(stop);
     for (let route of routes) {
       dataObject.stops[stop].routes[route.route.key] = [];
       for (let i = 0; i < 2; i++) {
@@ -92,7 +92,7 @@ const createBusListing = function(dataObject) {
       }
     }
   }
-}
+};
 
 const populateBusStops = function(streetKey) {
   wipeDataObject();
