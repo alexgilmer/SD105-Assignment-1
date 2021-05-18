@@ -58,6 +58,9 @@ const populateStreetList = function(streets) {
   for (let street of streets) {
     streetListElem.innerHTML += getStreetLink(street);
   }
+  if (streetListElem.innerHTML === '') {
+    streetListElem.innerHTML = '<a href="#">Sorry, there were no streets that matched your query</a>'
+  }
 };
 
 const buildDataObject = async function() {
@@ -71,7 +74,7 @@ const buildDataObject = async function() {
         // the number of buses available from the
         // api doesn't match the number of buses
         // we want to display. 
-        if (route["scheduled-stops"][i].times.arrival.scheduled) {
+        if (route["scheduled-stops"][i]) {
           dataObject.stops[stop].routes[routeKey].push(route["scheduled-stops"][i].times.arrival.scheduled);
         }
       }
@@ -159,7 +162,9 @@ document.forms[0].addEventListener('submit', (e) => {
 streetListElem.addEventListener('click', (e) => {
   if (e.target.tagName === 'A') {
     const streetKey = e.target.dataset.streetKey;
-    populateBusStops(streetKey, e.target.textContent);
+    if (streetKey) {
+      populateBusStops(streetKey, e.target.textContent);
+    }
   }
 });
 
