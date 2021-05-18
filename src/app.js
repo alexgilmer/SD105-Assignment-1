@@ -86,7 +86,10 @@ const createBusListing = function(dataObject) {
   for (let stop in dataObject.stops) {
     for (let route in dataObject.stops[stop].routes) {
       for (let busTime of dataObject.stops[stop].routes[route]) {
-        const appointment = (new Date(busTime)).toLocaleTimeString('en-US', {hour:"numeric", minute:"numeric"});
+        const appointment = (new Date(busTime))
+          .toLocaleTimeString('en-US', 
+          {hour:"numeric", minute:"numeric"}
+        );
         
         tbodyElem.innerHTML += `
         <tr>
