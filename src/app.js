@@ -23,7 +23,7 @@ const dataObject = {
   }
 };
 
-const wipeData = function() {
+const wipeDataObject = function() {
   dataObject.stops = {};
 };
 
@@ -95,14 +95,7 @@ const createBusListing = function(dataObject) {
 }
 
 const populateBusStops = function(streetKey) {
-  // wipe object data
-  // get all the stops
-  // put data into object
-  // for each stop, get all routes
-  // put data into object
-  // populate page
-
-  wipeData();
+  wipeDataObject();
 
   getStops(streetKey)
   .then((stopList) => {
