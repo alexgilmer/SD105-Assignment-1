@@ -1,6 +1,8 @@
 const baseAPIString = 'https://api.winnipegtransit.com/v3/';
 const myAPIKey = 'Pwv2RRw9obTuNAXMOwK8';
 const streetListElem = document.querySelector('section.streets');
+const NUM_BUSES_PER_ROUTE = 2;
+
 const dataObject = {
   stops: {
     10624: {
@@ -40,7 +42,7 @@ const getStops = async function(streetKey) {
 };
 
 const getRouteData = async function(stopKey) {
-  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}&max-results-per-route=2`);
+  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}&max-results-per-route=${NUM_BUSES_PER_ROUTE}`);
   const data = await response.json();
   return data['stop-schedule']['route-schedules'];
 };
@@ -60,10 +62,15 @@ const buildDataObject = async function() {
   for (let stop in dataObject.stops) {
     const routes = await getRouteData(stop);
     for (let route of routes) {
-      dataObject.stops[stop].routes[route.route.key] = [];
-      for (let i = 0; i < 2; i++) {
+      const routeKey = route.route.key;
+      dataObject.stops[stop].routes[routeKey] = [];
+      for (let i = 0; i < NUM_BUSES_PER_ROUTE; i++) {
+        // This if statement prevents errors where
+        // the number of buses available from the
+        // api doesn't match the number of buses
+        // we want to display. 
         if (route["scheduled-stops"][i].times.arrival.scheduled) {
-          dataObject.stops[stop].routes[route.route.key].push(route["scheduled-stops"][i].times.arrival.scheduled);
+          dataObject.stops[stop].routes[routeKey].push(route["scheduled-stops"][i].times.arrival.scheduled);
         }
       }
     }
