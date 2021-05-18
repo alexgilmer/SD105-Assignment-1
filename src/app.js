@@ -32,7 +32,7 @@ const wipeDataObject = function() {
 };
 
 const getStreets = async function(string) {
-  const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`);
+  const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}&usage=long`);
   const data = await response.json();
   return data.streets;
 };
@@ -103,14 +103,18 @@ const createBusListing = function(dataObject) {
       }
     }
   }
+
+  if (tbodyElem.innerHTML === '') {
+    tbodyElem.innerHTML = '<tr><td>Sorry, there are no bus stops on this street.</td></tr>';
+  }
 };
 
-const populateBusStops = function(streetKey) {
+const populateBusStops = function(streetKey, streetName) {
   wipeDataObject();
 
   getStops(streetKey)
   .then((stopList) => {
-    displayStatusElem.textContent = `Displaying results for ${stopList[0].street.name}`;
+    displayStatusElem.textContent = `Displaying results for ${streetName}`;
     tbodyElem.innerHTML = '<tr><td>Data construction in progress...</td></tr>';
     for (let stop of stopList) {
       dataObject.stops[stop.key] = {
@@ -155,7 +159,7 @@ document.forms[0].addEventListener('submit', (e) => {
 streetListElem.addEventListener('click', (e) => {
   if (e.target.tagName === 'A') {
     const streetKey = e.target.dataset.streetKey;
-    populateBusStops(streetKey);
+    populateBusStops(streetKey, e.target.textContent);
   }
 });
 
