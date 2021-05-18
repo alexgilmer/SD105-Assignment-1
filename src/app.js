@@ -1,6 +1,10 @@
 const baseAPIString = 'https://api.winnipegtransit.com/v3/';
 const myAPIKey = 'Pwv2RRw9obTuNAXMOwK8';
 const streetListElem = document.querySelector('section.streets');
+const tbodyElem = document.querySelector('tbody');
+const displayStatusElem = document.getElementById('street-name');
+const NUM_BUSES_PER_ROUTE = 2;
+
 const dataObject = {
   stops: {
     10624: {
@@ -13,7 +17,7 @@ const dataObject = {
       }
     },
     10625: {
-      street: 'Other Street',
+      street: 'Main Street',
       crossStreet: 'Some Boulevard',
       direction: 'Westbound',
       routes: {
@@ -23,12 +27,12 @@ const dataObject = {
   }
 };
 
-const wipeData = function() {
+const wipeDataObject = function() {
   dataObject.stops = {};
 };
 
 const getStreets = async function(string) {
-  const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`)
+  const response = await fetch(`${baseAPIString}streets.json?api-key=${myAPIKey}&name=${string}`);
   const data = await response.json();
   return data.streets;
 };
@@ -40,14 +44,14 @@ const getStops = async function(streetKey) {
 };
 
 const getRouteData = async function(stopKey) {
-  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}&max-results-per-route=2`);
+  const response = await fetch(`${baseAPIString}stops/${stopKey}/schedule.json?api-key=${myAPIKey}&max-results-per-route=${NUM_BUSES_PER_ROUTE}`);
   const data = await response.json();
   return data['stop-schedule']['route-schedules'];
 };
 
 const getStreetLink = function(street) {
   return `<a href="#" data-street-key="${street.key}">${street.name}</a>`;
-}
+};
 
 const populateStreetList = function(streets) {
   streetListElem.innerHTML = '';
@@ -58,12 +62,17 @@ const populateStreetList = function(streets) {
 
 const buildDataObject = async function() {
   for (let stop in dataObject.stops) {
-    const routes = await getRouteData(stop)
+    const routes = await getRouteData(stop);
     for (let route of routes) {
-      dataObject.stops[stop].routes[route.route.key] = [];
-      for (let i = 0; i < 2; i++) {
+      const routeKey = route.route.key;
+      dataObject.stops[stop].routes[routeKey] = [];
+      for (let i = 0; i < NUM_BUSES_PER_ROUTE; i++) {
+        // This if statement prevents errors where
+        // the number of buses available from the
+        // api doesn't match the number of buses
+        // we want to display. 
         if (route["scheduled-stops"][i].times.arrival.scheduled) {
-          dataObject.stops[stop].routes[route.route.key].push(route["scheduled-stops"][i].times.arrival.scheduled);
+          dataObject.stops[stop].routes[routeKey].push(route["scheduled-stops"][i].times.arrival.scheduled);
         }
       }
     }
@@ -73,13 +82,15 @@ const buildDataObject = async function() {
 };
 
 const createBusListing = function(dataObject) {
-  const tbodyElem = document.querySelector('tbody');
   tbodyElem.innerHTML = '';
 
   for (let stop in dataObject.stops) {
     for (let route in dataObject.stops[stop].routes) {
       for (let busTime of dataObject.stops[stop].routes[route]) {
-        const appointment = (new Date(busTime)).toLocaleTimeString('en-US', {hour:"numeric", minute:"numeric"});
+        const appointment = (new Date(busTime))
+          .toLocaleTimeString('en-US', 
+          {hour:"numeric", minute:"numeric"}
+        );
         
         tbodyElem.innerHTML += `
         <tr>
@@ -92,20 +103,15 @@ const createBusListing = function(dataObject) {
       }
     }
   }
-}
+};
 
 const populateBusStops = function(streetKey) {
-  // wipe object data
-  // get all the stops
-  // put data into object
-  // for each stop, get all routes
-  // put data into object
-  // populate page
-
-  wipeData();
+  wipeDataObject();
 
   getStops(streetKey)
   .then((stopList) => {
+    displayStatusElem.textContent = `Displaying results for ${stopList[0].street.name}`;
+    tbodyElem.innerHTML = '<tr><td>Data construction in progress...</td></tr>';
     for (let stop of stopList) {
       dataObject.stops[stop.key] = {
         street: stop.street.name,
@@ -121,6 +127,7 @@ const populateBusStops = function(streetKey) {
     .catch((err) => {
       console.log('Something is broken:');
       console.log(err);
+      tbodyElem.innerHTML = '<tr><td>Data construction failed.  Please try again in a couple of minutes.</td></tr>';
     });
   })
   .catch((err) => {
@@ -151,3 +158,7 @@ streetListElem.addEventListener('click', (e) => {
     populateBusStops(streetKey);
   }
 });
+
+streetListElem.innerHTML = '';
+tbodyElem.innerHTML = '';
+displayStatusElem.textContent = '';
