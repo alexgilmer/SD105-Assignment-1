@@ -8,7 +8,7 @@ const NUM_BUSES_PER_ROUTE = 2;
 const dataObject = {
   stops: {
     10624: {
-      street: 'Main Street',
+      stopName: 'Northbound Main at Assiniboine',
       crossStreet: 'Assiniboine Avenue',
       direction: 'Northbound',
       routes: {
@@ -17,7 +17,7 @@ const dataObject = {
       }
     },
     10625: {
-      street: 'Main Street',
+      stopName: 'Westbound Main at Some Blvd',
       crossStreet: 'Some Boulevard',
       direction: 'Westbound',
       routes: {
@@ -70,12 +70,16 @@ const buildDataObject = async function() {
       const routeKey = route.route.key;
       dataObject.stops[stop].routes[routeKey] = [];
       for (let i = 0; i < NUM_BUSES_PER_ROUTE; i++) {
-        // This if statement prevents errors where
+        // The first if statement prevents errors where
         // the number of buses available from the
         // api doesn't match the number of buses
         // we want to display. 
+        // The second if prevents errors where a bus
+        // is between arrival & departure
         if (route["scheduled-stops"][i]) {
-          dataObject.stops[stop].routes[routeKey].push(route["scheduled-stops"][i].times.arrival.scheduled);
+          if (route["scheduled-stops"][i].times.arrival) {
+            dataObject.stops[stop].routes[routeKey].push(route["scheduled-stops"][i].times.arrival.scheduled);
+          }
         }
       }
     }
@@ -97,7 +101,7 @@ const createBusListing = function(dataObject) {
         
         tbodyElem.innerHTML += `
         <tr>
-          <td>${dataObject.stops[stop].street}</td>
+          <td>${dataObject.stops[stop].stopName}</td>
           <td>${dataObject.stops[stop].crossStreet}</td>
           <td>${dataObject.stops[stop].direction}</td>
           <td>${route}</td>
@@ -121,7 +125,7 @@ const populateBusStops = function(streetKey, streetName) {
     tbodyElem.innerHTML = '<tr><td>Data construction in progress...</td></tr>';
     for (let stop of stopList) {
       dataObject.stops[stop.key] = {
-        street: stop.street.name,
+        stopName: stop.name,
         crossStreet: stop['cross-street'].name,
         direction: stop.direction,
         routes: {}
