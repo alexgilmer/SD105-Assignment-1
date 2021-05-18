@@ -17,7 +17,7 @@ const dataObject = {
       }
     },
     10625: {
-      street: 'Other Street',
+      street: 'Main Street',
       crossStreet: 'Some Boulevard',
       direction: 'Westbound',
       routes: {
